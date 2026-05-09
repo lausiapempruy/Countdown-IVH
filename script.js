@@ -1,11 +1,11 @@
-// ===== CONFIG ASRAMA IVH - UDAH LU SET =====
-// Tanggal: 2026, 4, 30, 18, 0, 0 = 30 Mei 2026 Jam 18:00 WIB
-// Note: Bulan 4 = Mei karena JS 0-index. Bug keundur 1 bulan udah diakalin.
+// ===== KONFIGURASI IVH 1924 =====
+// Tanggal: 30 Mei 2026, 18:00 WIB
+// Catatan: Bulan 4 = Mei (JS month 0-index)
 const TARGET_DATE = new Date(2026, 4, 30, 18, 0, 0);
 
-// Link copy sesuai permintaan lu
-const DISCORD_INVITE_LINK = "https://lausiapempruy.github.io/Countdown-IVH/";
-// ===== END CONFIG =====
+// Link arsip yang disalin
+const ARSIP_LINK = "https://lausiapempruy.github.io/Countdown-IVH/";
+// ===== SELESAI KONFIG =====
 
 const el = {
     days: document.getElementById('days'),
@@ -13,56 +13,60 @@ const el = {
     minutes: document.getElementById('minutes'),
     seconds: document.getElementById('seconds'),
     targetText: document.getElementById('targetDateText'),
-    inviteInput: document.getElementById('inviteLink'),
-    copyBtn: document.getElementById('copyBtn'),
+    arsipInput: document.getElementById('arsipLink'),
+    stempelBtn: document.getElementById('stempelBtn'),
     countdown: document.getElementById('countdown')
 };
 
-// Set link & tanggal
-el.inviteInput.value = DISCORD_INVITE_LINK;
-el.targetText.textContent = `Pengesahan: ${TARGET_DATE.toLocaleDateString('id-ID', {
+el.arsipInput.value = ARSIP_LINK;
+el.targetText.textContent = `Hari Pengesahan: ${TARGET_DATE.toLocaleString('id-ID', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', 
     hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta'
 })} WIB`;
 
-function updateCountdown() {
-    const now = new Date().getTime();
-    const gap = TARGET_DATE.getTime() - now;
+function updateWaktu() {
+    const sekarang = new Date().getTime();
+    const selisih = TARGET_DATE.getTime() - sekarang;
 
-    if (gap <= 0) {
-        el.countdown.innerHTML = `<div class="launched"><h2>IVH TELAH DIBUKA!</h2><p>Welkom di era baru, Bewoners.</p></div>`;
-        clearInterval(timer);
+    if (selisih <= 0) {
+        el.countdown.innerHTML = `
+            <div style="text-align:center; width:100%; padding: 20px 0;">
+                <h2 style="font-family:'Special Elite',cursive; color:var(--lilin); font-size:1.8rem;">MAKLUMAT TELAH DIBACAKAN</h2>
+                <p style="font-size:1.1rem; margin-top:10px;">Selamat datang di era Instituut voor Huisdeken.</p>
+            </div>
+        `;
+        clearInterval(intervalWaktu);
         return;
     }
 
-    const d = Math.floor(gap / (1000 * 60 * 60 * 24));
-    const h = Math.floor((gap % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const m = Math.floor((gap % (1000 * 60 * 60)) / (1000 * 60));
-    const s = Math.floor((gap % (1000 * 60)) / 1000);
+    const hari = Math.floor(selisih / 86400000);
+    const jam = Math.floor((selisih % 86400000) / 3600000);
+    const menit = Math.floor((selisih % 3600000) / 60000);
+    const detik = Math.floor((selisih % 60000) / 1000);
 
-    el.days.textContent = String(d).padStart(2, '0');
-    el.hours.textContent = String(h).padStart(2, '0');
-    el.minutes.textContent = String(m).padStart(2, '0');
-    el.seconds.textContent = String(s).padStart(2, '0');
+    el.days.textContent = String(hari).padStart(2, '0');
+    el.hours.textContent = String(jam).padStart(2, '0');
+    el.minutes.textContent = String(menit).padStart(2, '0');
+    el.seconds.textContent = String(detik).padStart(2, '0');
 }
 
-// Copy button logic + animasi
-el.copyBtn.addEventListener('click', () => {
-    navigator.clipboard.writeText(el.inviteInput.value).then(() => {
-        const btnText = el.copyBtn.querySelector('.btn-text');
-        const btnIcon = el.copyBtn.querySelector('.btn-icon');
-        
-        btnText.textContent = 'TERSALIN';
-        btnIcon.textContent = '✓';
-        el.copyBtn.classList.add('success');
-        
+el.stempelBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(ARSIP_LINK).then(() => {
+        el.stempelBtn.textContent = 'TERSTEMPEL!';
+        el.stempelBtn.classList.add('stamped');
         setTimeout(() => {
-            btnText.textContent = 'SALIN';
-            btnIcon.textContent = '📋';
-            el.copyBtn.classList.remove('success');
-        }, 2000);
+            el.stempelBtn.textContent = 'STEMPEL';
+            el.stempelBtn.classList.remove('stamped');
+        }, 2500);
+    }).catch(err => {
+        el.stempelBtn.textContent = 'GAGAL';
     });
 });
 
-const timer = setInterval(updateCountdown, 1000);
-updateCountdown();
+// Efek ketik saat load
+window.addEventListener('load', () => {
+    document.querySelector('.isi h2').style.width = '100%';
+});
+
+const intervalWaktu = setInterval(updateWaktu, 1000);
+updateWaktu();
